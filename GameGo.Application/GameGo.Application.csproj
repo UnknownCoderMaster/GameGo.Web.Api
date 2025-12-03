@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Features\Authentication\Services\" />
+    <Folder Include="Features\Games\Commands\CreateGame\" />
+    <Folder Include="Features\Games\Commands\UpdateGame\" />
+    <Folder Include="Features\Games\Queries\GetGames\" />
+    <Folder Include="Features\Games\Queries\GetGameById\" />
+    <Folder Include="Features\Games\Queries\SearchGames\" />
+    <Folder Include="Features\Services\Commands\UpdateService\" />
+    <Folder Include="Features\Services\Commands\CreateService\" />
+    <Folder Include="Features\Services\Queries\GetPlaceServices\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GameGo.Domain\GameGo.Domain.csproj" />
+    <ProjectReference Include="..\GameGo.Shared\GameGo.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="15.1.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="FluentValidation" Version="11.9.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.0" />
+    <PackageReference Include="MediatR" Version="13.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.22" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.22" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.22" />
+  </ItemGroup>
+
+</Project>

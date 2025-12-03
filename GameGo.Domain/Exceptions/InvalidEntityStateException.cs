@@ -1,0 +1,13 @@
+﻿using System;
+
+namespace GameGo.Domain.Exceptions;
+
+public class InvalidEntityStateException : DomainException
+{
+	public InvalidEntityStateException() { }
+
+	public InvalidEntityStateException(string message) : base(message) { }
+
+	public InvalidEntityStateException(string message, Exception innerException)
+		: base(message, innerException) { }
+}

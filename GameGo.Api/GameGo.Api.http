@@ -1,0 +1,6 @@
+@GameGo.Api_HostAddress = http://localhost:5032
+
+GET {{GameGo.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

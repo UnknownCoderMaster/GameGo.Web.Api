@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/docs/">
+    <File Path="API_DOCUMENTATION.md" />
+    <File Path="ARCHITECTURE.md" />
+    <File Path="GETTING_STARTED.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="GameGo.Api/GameGo.Api.csproj" />
+    <Project Path="GameGo.Application/GameGo.Application.csproj" />
+    <Project Path="GameGo.Domain/GameGo.Domain.csproj" />
+    <Project Path="GameGo.Infrastructure/GameGo.Infrastructure.csproj" />
+    <Project Path="GameGo.Shared/GameGo.Shared.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="GameGo.Api.IntegrationTests/GameGo.Api.IntegrationTests.csproj" />
+    <Project Path="GameGo.Application.Tests/GameGo.Application.Tests.csproj" />
+    <Project Path="GameGo.Domain.Tests/GameGo.Domain.Tests.csproj" />
+    <Project Path="GameGo.Infrastructure.Tests/GameGo.Infrastructure.Tests.csproj" />
+  </Folder>
+</Solution>
