@@ -16,4 +16,44 @@ public class Service : AuditableEntity
 	public virtual Place Place { get; private set; } = null!;
 
 	private Service() { }
+
+	public static Service Create(
+		long placeId,
+		string name,
+		decimal price,
+		string description = null,
+		string currency = "UZS",
+		int? durationMinutes = null,
+		int capacity = 1)
+	{
+		return new Service
+		{
+			PlaceId = placeId,
+			Name = name,
+			Description = description,
+			Price = price,
+			Currency = currency,
+			DurationMinutes = durationMinutes,
+			Capacity = capacity,
+			IsActive = true
+		};
+	}
+
+	public void Update(
+		string name,
+		decimal price,
+		string description = null,
+		int? durationMinutes = null,
+		int capacity = 1)
+	{
+		Name = name;
+		Description = description;
+		Price = price;
+		DurationMinutes = durationMinutes;
+		Capacity = capacity;
+	}
+
+	public void Activate() => IsActive = true;
+
+	public void Deactivate() => IsActive = false;
 }

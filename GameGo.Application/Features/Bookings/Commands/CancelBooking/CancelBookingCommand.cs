@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GameGo.Application.Common.Models;
+using MediatR;
 
-namespace GameGo.Application.Features.Bookings.Commands.CancelBooking
+namespace GameGo.Application.Features.Bookings.Commands.CancelBooking;
+
+public class CancelBookingCommand : IRequest<Result>
 {
-	internal class CancelBookingCommand
-	{
-	}
+	public long BookingId { get; set; }
+	public string CancellationReason { get; set; }
 }

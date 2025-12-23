@@ -17,4 +17,30 @@ public class Notification : AuditableEntity
 	public virtual User User { get; private set; } = null!;
 
 	private Notification() { }
+
+	public static Notification Create(
+		long userId,
+		string title,
+		string message,
+		NotificationType type,
+		string relatedEntityType = null,
+		long? relatedEntityId = null)
+	{
+		return new Notification
+		{
+			UserId = userId,
+			Title = title,
+			Message = message,
+			Type = type,
+			RelatedEntityType = relatedEntityType,
+			RelatedEntityId = relatedEntityId,
+			IsRead = false
+		};
+	}
+
+	public void MarkAsRead()
+	{
+		IsRead = true;
+		ReadAt = DateTime.UtcNow;
+	}
 }

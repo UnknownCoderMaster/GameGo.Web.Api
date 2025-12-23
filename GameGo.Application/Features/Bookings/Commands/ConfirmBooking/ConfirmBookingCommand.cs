@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GameGo.Application.Common.Models;
+using MediatR;
 
-namespace GameGo.Application.Features.Bookings.Commands.ConfirmBooking
+namespace GameGo.Application.Features.Bookings.Commands.ConfirmBooking;
+
+public class ConfirmBookingCommand : IRequest<Result>
 {
-	internal class ConfirmBookingCommand
-	{
-	}
+	public long BookingId { get; set; }
 }

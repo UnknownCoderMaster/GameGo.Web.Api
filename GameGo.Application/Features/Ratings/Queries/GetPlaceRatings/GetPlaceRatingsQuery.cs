@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GameGo.Application.Common.Models;
+using MediatR;
 
-namespace GameGo.Application.Features.Ratings.Queries.GetPlaceRatings
+namespace GameGo.Application.Features.Ratings.Queries.GetPlaceRatings;
+
+public class GetPlaceRatingsQuery : IRequest<Result<PaginatedList<RatingDto>>>
 {
-	internal class GetPlaceRatingsQuery
-	{
-	}
+	public long PlaceId { get; set; }
+	public int PageNumber { get; set; } = 1;
+	public int PageSize { get; set; } = 10;
+	public int? MinScore { get; set; }
+	public bool? VerifiedOnly { get; set; }
 }

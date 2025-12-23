@@ -57,6 +57,17 @@ public class Rating : AuditableEntity
 		return rating;
 	}
 
+	public void Update(int score, string review = null, string pros = null, string cons = null)
+	{
+		if (score < 1 || score > 5)
+			throw new ArgumentException("Score must be between 1 and 5", nameof(score));
+
+		Score = score;
+		Review = review;
+		Pros = pros;
+		Cons = cons;
+	}
+
 	public void IncrementHelpful() => HelpfulCount++;
 
 	public void DecrementHelpful() => HelpfulCount = Math.Max(0, HelpfulCount - 1);

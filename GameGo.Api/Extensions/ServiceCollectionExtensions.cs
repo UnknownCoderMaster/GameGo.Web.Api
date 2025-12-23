@@ -75,13 +75,21 @@ public static class ServiceCollectionExtensions
 			{
 				Title = "GameGo API",
 				Version = "v1",
-				Description = "GameGo - Venue Booking System API",
+				Description = "GameGo - O'yin-kulgi joylari va tadbirlar uchun bron qilish tizimi API'si",
 				Contact = new OpenApiContact
 				{
 					Name = "GameGo Team",
 					Email = "support@gamego.uz"
 				}
 			});
+
+			// XML Comments uchun konfiguratsiya
+			var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+			var xmlPath = System.IO.Path.Combine(AppContext.BaseDirectory, xmlFile);
+			if (System.IO.File.Exists(xmlPath))
+			{
+				c.IncludeXmlComments(xmlPath);
+			}
 
 			// JWT Authentication in Swagger
 			c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

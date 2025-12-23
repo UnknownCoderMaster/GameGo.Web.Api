@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GameGo.Application.Common.Models;
+using MediatR;
 
-namespace GameGo.Application.Features.Ratings.Commands.UpdateRating
+namespace GameGo.Application.Features.Ratings.Commands.UpdateRating;
+
+public class UpdateRatingCommand : IRequest<Result>
 {
-	internal class UpdateRatingCommand
-	{
-	}
+	public long RatingId { get; set; }
+	public int Score { get; set; }
+	public string Review { get; set; }
+	public string Pros { get; set; }
+	public string Cons { get; set; }
 }

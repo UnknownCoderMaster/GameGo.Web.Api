@@ -11,4 +11,14 @@ public class RatingHelpful : AuditableEntity
 	public virtual User User { get; private set; } = null!;
 
 	private RatingHelpful() { }
+
+	public static RatingHelpful Create(long ratingId, long userId, bool isHelpful = true)
+	{
+		return new RatingHelpful
+		{
+			RatingId = ratingId,
+			UserId = userId,
+			IsHelpful = isHelpful
+		};
+	}
 }

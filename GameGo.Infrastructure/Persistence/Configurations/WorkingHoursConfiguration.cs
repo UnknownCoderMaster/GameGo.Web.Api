@@ -1,5 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using GameGo.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace GameGo.Infrastructure.Persistence.Configurations;
 
 public class WorkingHoursConfiguration : IEntityTypeConfiguration<WorkingHours>
 {

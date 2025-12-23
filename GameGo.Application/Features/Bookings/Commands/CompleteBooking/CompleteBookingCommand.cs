@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GameGo.Application.Common.Models;
+using MediatR;
 
-namespace GameGo.Application.Features.Bookings.Commands.CompleteBooking
+namespace GameGo.Application.Features.Bookings.Commands.CompleteBooking;
+
+public class CompleteBookingCommand : IRequest<Result>
 {
-	internal class CompleteBookingCommand
-	{
-	}
+	public long BookingId { get; set; }
 }
