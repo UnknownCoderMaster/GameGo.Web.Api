@@ -11,6 +11,6 @@ public class VerifyPhoneCommandValidator : AbstractValidator<VerifyPhoneCommand>
 
 		RuleFor(x => x.Code)
 			.NotEmpty().WithMessage("Verification code is required")
-			.Length(6).WithMessage("Verification code must be 6 digits");
+			.Length(4).WithMessage("Verification code must be 4 digits");
 	}
 }

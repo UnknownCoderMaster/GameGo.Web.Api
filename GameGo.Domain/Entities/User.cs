@@ -34,8 +34,8 @@ public class User : AuditableEntity
 		string firstName,
 		string lastName)
 	{
-		if (string.IsNullOrWhiteSpace(email))
-			throw new ArgumentException("Email cannot be empty", nameof(email));
+		//if (string.IsNullOrWhiteSpace(email))
+		//	throw new ArgumentException("Email cannot be empty", nameof(email));
 
 		if (string.IsNullOrWhiteSpace(passwordHash))
 			throw new ArgumentException("Password hash cannot be empty", nameof(passwordHash));
