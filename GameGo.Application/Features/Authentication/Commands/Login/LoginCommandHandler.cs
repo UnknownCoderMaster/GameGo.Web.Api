@@ -43,13 +43,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
 		if (!isValidPassword)
 			return Result<LoginResponse>.Failure("Invalid phone number or password");
 
-		var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email);
+		var accessToken = _tokenService.GenerateAccessToken(user.Id, user.PhoneNumber);
 		var refreshToken = _tokenService.GenerateRefreshToken();
 
 		return Result<LoginResponse>.Success(new LoginResponse
 		{
 			UserId = user.Id,
-			Email = user.Email,
+			PhoneNumber = user.PhoneNumber,
 			AccessToken = accessToken,
 			RefreshToken = refreshToken
 		});

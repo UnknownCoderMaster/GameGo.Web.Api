@@ -19,7 +19,7 @@ public class TokenService : ITokenService
 		_configuration = configuration;
 	}
 
-	public string GenerateAccessToken(long userId, string email)
+	public string GenerateAccessToken(long userId, string phoneNumber)
 	{
 		var jwtSettings = _configuration.GetSection("Jwt");
 		var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
@@ -28,7 +28,7 @@ public class TokenService : ITokenService
 		var claims = new[]
 		{
 			new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
-			new Claim(JwtRegisteredClaimNames.Email, email),
+			new Claim(JwtRegisteredClaimNames.PhoneNumber, phoneNumber),
 			new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
 			new Claim("userId", userId.ToString())
 		};
