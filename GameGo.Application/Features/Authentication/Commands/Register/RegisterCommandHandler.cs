@@ -86,8 +86,8 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Re
 		_context.Verifications.Add(verification);
 		await _context.SaveChangesAsync(cancellationToken);
 
-		// Send SMS
-		await _smsService.SendVerificationCodeAsync(request.PhoneNumber, verificationCode);
+		// // Send SMS
+		// await _smsService.SendVerificationCodeAsync(request.PhoneNumber, verificationCode);
 
 		return Result<RegisterResponse>.Success(new RegisterResponse
 		{
