@@ -45,7 +45,7 @@ public class User : AuditableEntity
 
 		return new User
 		{
-			Email = email.ToLower(),
+			Email = email,
 			PasswordHash = passwordHash,
 			PhoneNumber = phoneNumber,
 			FirstName = firstName,

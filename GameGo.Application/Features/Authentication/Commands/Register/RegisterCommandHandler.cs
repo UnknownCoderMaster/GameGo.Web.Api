@@ -30,12 +30,19 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Re
 
 	public async Task<Result<RegisterResponse>> Handle(RegisterCommand request, CancellationToken cancellationToken)
 	{
-		// Check if email already exists
-		var emailExists = await _context.Users
-			.AnyAsync(u => u.Email == request.Email.ToLower(), cancellationToken);
+		if (!string.IsNullOrWhiteSpace(request.Email))
+		{
+			// Check if email already exists
+			var emailExists = await _context.Users
+				.AnyAsync(u => u.Email == request.Email, cancellationToken);
 
-		if (emailExists)
-			return Result<RegisterResponse>.Failure("Email already registered");
+			if (emailExists)
+				return Result<RegisterResponse>.Failure("Email already registered");
+		}
+		else
+		{
+			request.Email = $"unknown_{Guid.NewGuid()}_@email.com";
+		}
 
 		// Check if phone number already exists
 		var phoneExists = await _context.Users
@@ -53,7 +60,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Re
 
 		// Create user
 		var user = User.Create(
-			request.Email.ToLower(),
+			request.Email,
 			passwordHash,
 			request.PhoneNumber,
 			request.FirstName,
