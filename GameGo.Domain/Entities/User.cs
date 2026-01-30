@@ -18,6 +18,8 @@ public class User : AuditableEntity
 	public bool IsActive { get; set; }
 	public bool IsEmailVerified { get; set; }
 	public bool IsPhoneVerified { get; set; }
+	public string RefreshToken { get; set; }
+	public DateTime? RefreshTokenExpiresAt { get; set; }
 
 	// Navigation Properties
 	public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
@@ -80,4 +82,16 @@ public class User : AuditableEntity
 	public void Deactivate() => IsActive = false;
 
 	public void Activate() => IsActive = true;
+
+	public void UpdateRefreshToken(string refreshToken, DateTime expiresAt)
+	{
+		RefreshToken = refreshToken;
+		RefreshTokenExpiresAt = expiresAt;
+	}
+
+	public void RevokeRefreshToken()
+	{
+		RefreshToken = null;
+		RefreshTokenExpiresAt = null;
+	}
 }

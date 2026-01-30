@@ -1,4 +1,5 @@
 ﻿using GameGo.Application.Features.Authentication.Commands.Login;
+using GameGo.Application.Features.Authentication.Commands.RefreshToken;
 using GameGo.Application.Features.Authentication.Commands.Register;
 using GameGo.Application.Features.Authentication.Commands.VerifyPhone;
 using MediatR;
@@ -49,5 +50,16 @@ public class AuthController : ControllerBase
 			return BadRequest(new { error = result.Error });
 
 		return Ok(new { message = result.Data });
+	}
+
+	[HttpPost("refresh-token")]
+	public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
+	{
+		var result = await _mediator.Send(command);
+
+		if (!result.IsSuccess)
+			return BadRequest(new { error = result.Error });
+
+		return Ok(result.Data);
 	}
 }

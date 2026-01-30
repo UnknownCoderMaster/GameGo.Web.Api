@@ -1,5 +1,6 @@
-﻿using GameGo.Application.Common.Models;
+using GameGo.Application.Common.Models;
 using GameGo.Application.Contracts.Identity;
+using GameGo.Application.Contracts.Infrastructure;
 using GameGo.Application.Contracts.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,22 +14,22 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
 	private readonly IApplicationDbContext _context;
 	private readonly IIdentityService _identityService;
 	private readonly ITokenService _tokenService;
+	private readonly IDateTime _dateTime;
 
 	public LoginCommandHandler(
 		IApplicationDbContext context,
 		IIdentityService identityService,
-		ITokenService tokenService)
+		ITokenService tokenService,
+		IDateTime dateTime)
 	{
 		_context = context;
 		_identityService = identityService;
 		_tokenService = tokenService;
+		_dateTime = dateTime;
 	}
 
 	public async Task<Result<LoginResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
 	{
-		//var user = await _context.Users
-		//	.FirstOrDefaultAsync(u => u.Email == request.Email.ToLower(), cancellationToken);
-
 		var user = await _context.Users
 			.FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber, cancellationToken);
 
@@ -45,6 +46,10 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
 
 		var accessToken = _tokenService.GenerateAccessToken(user.Id, user.PhoneNumber);
 		var refreshToken = _tokenService.GenerateRefreshToken();
+
+		// Save refresh token to user
+		user.UpdateRefreshToken(refreshToken, _dateTime.UtcNow.AddDays(7));
+		await _context.SaveChangesAsync(cancellationToken);
 
 		return Result<LoginResponse>.Success(new LoginResponse
 		{
