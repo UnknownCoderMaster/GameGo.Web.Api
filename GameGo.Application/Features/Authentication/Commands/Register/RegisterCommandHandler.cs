@@ -1,5 +1,4 @@
-﻿using GameGo.Application.Common.Models;
-using GameGo.Application.Contracts.Identity;
+using GameGo.Application.Common.Models;
 using GameGo.Application.Contracts.Infrastructure;
 using GameGo.Application.Contracts.Persistence;
 using GameGo.Domain.Entities;
@@ -15,16 +14,13 @@ namespace GameGo.Application.Features.Authentication.Commands.Register;
 public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<RegisterResponse>>
 {
 	private readonly IApplicationDbContext _context;
-	private readonly IIdentityService _identityService;
 	private readonly ISmsService _smsService;
 
 	public RegisterCommandHandler(
 		IApplicationDbContext context,
-		IIdentityService identityService,
 		ISmsService smsService)
 	{
 		_context = context;
-		_identityService = identityService;
 		_smsService = smsService;
 	}
 
@@ -51,14 +47,9 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Re
 		if (phoneExists)
 			return Result<RegisterResponse>.Failure("Phone number already registered");
 
-		// Default password for all users
-		var defaultPassword = "7777";
-		var passwordHash = await _identityService.HashPasswordAsync(defaultPassword);
-
 		// Create user
 		var user = User.Create(
 			request.Email,
-			passwordHash,
 			request.PhoneNumber,
 			request.FirstName,
 			request.LastName);
@@ -66,7 +57,8 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Re
 		_context.Users.Add(user);
 		await _context.SaveChangesAsync(cancellationToken);
 
-		var verificationCode = new Random().Next(1000, 9999).ToString();
+		var verificationCode = "7777";
+		//var verificationCode = new Random().Next(1000, 9999).ToString();
 
 		var verification = new Verification
 		{

@@ -1,7 +1,6 @@
-﻿using GameGo.Application.Features.Authentication.Commands.Login;
+using GameGo.Application.Features.Authentication.Commands.Login;
 using GameGo.Application.Features.Authentication.Commands.RefreshToken;
 using GameGo.Application.Features.Authentication.Commands.Register;
-using GameGo.Application.Features.Authentication.Commands.VerifyLogin;
 using GameGo.Application.Features.Authentication.Commands.VerifyPhone;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -42,17 +41,6 @@ public class AuthController : ControllerBase
 		return Ok(result.Data);
 	}
 
-	[HttpPost("verify-login")]
-	public async Task<IActionResult> VerifyLogin([FromBody] VerifyLoginCommand command)
-	{
-		var result = await _mediator.Send(command);
-
-		if (!result.IsSuccess)
-			return BadRequest(new { error = result.Error });
-
-		return Ok(result.Data);
-	}
-
 	[HttpPost("verify-phone")]
 	public async Task<IActionResult> VerifyPhone([FromBody] VerifyPhoneCommand command)
 	{
@@ -61,7 +49,7 @@ public class AuthController : ControllerBase
 		if (!result.IsSuccess)
 			return BadRequest(new { error = result.Error });
 
-		return Ok(new { message = result.Data });
+		return Ok(result.Data);
 	}
 
 	[HttpPost("refresh-token")]

@@ -31,24 +31,16 @@ public class User : AuditableEntity
 
 	public static User Create(
 		string email,
-		string passwordHash,
 		string phoneNumber,
 		string firstName,
 		string lastName)
 	{
-		//if (string.IsNullOrWhiteSpace(email))
-		//	throw new ArgumentException("Email cannot be empty", nameof(email));
-
-		if (string.IsNullOrWhiteSpace(passwordHash))
-			throw new ArgumentException("Password hash cannot be empty", nameof(passwordHash));
-
 		if (string.IsNullOrWhiteSpace(phoneNumber))
 			throw new ArgumentException("Phone number cannot be empty", nameof(phoneNumber));
 
 		return new User
 		{
 			Email = email,
-			PasswordHash = passwordHash,
 			PhoneNumber = phoneNumber,
 			FirstName = firstName,
 			LastName = lastName,

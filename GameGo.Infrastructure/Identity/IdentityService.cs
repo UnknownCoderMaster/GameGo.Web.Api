@@ -36,11 +36,8 @@ public class IdentityService : IIdentityService
 		if (phoneExists)
 			return (false, 0);
 
-		var passwordHash = _passwordHasher.HashPassword(null, password);
-
 		var user = Domain.Entities.User.Create(
 			email.ToLower(),
-			passwordHash,
 			phoneNumber,
 			firstName,
 			lastName);

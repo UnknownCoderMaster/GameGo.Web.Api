@@ -1,6 +1,6 @@
-namespace GameGo.Application.Features.Authentication.Commands.VerifyLogin;
+namespace GameGo.Application.Features.Authentication.Commands.VerifyPhone;
 
-public class VerifyLoginResponse
+public class VerifyPhoneResponse
 {
 	public long UserId { get; set; }
 	public string PhoneNumber { get; set; }
