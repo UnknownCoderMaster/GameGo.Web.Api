@@ -24,14 +24,6 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
 		if (!_currentUser.UserId.HasValue)
 			return Result<bool>.Failure("Foydalanuvchi topilmadi");
 
-		var result = await _identityService.ChangePasswordAsync(
-			_currentUser.UserId.Value,
-			request.CurrentPassword,
-			request.NewPassword);
-
-		if (!result)
-			return Result<bool>.Failure("Joriy parol noto'g'ri");
-
 		return Result<bool>.Success(true);
 	}
 }

@@ -8,7 +8,6 @@ namespace GameGo.Domain.Entities;
 public class User : AuditableEntity
 {
 	public string Email { get; set; }
-	public string PasswordHash { get; set; } = null!;
 	public string PhoneNumber { get; set; } = null!;
 	public string FirstName { get; set; } = null!;
 	public string LastName { get; set; } = null!;
@@ -62,14 +61,6 @@ public class User : AuditableEntity
 	public void VerifyEmail() => IsEmailVerified = true;
 
 	public void VerifyPhone() => IsPhoneVerified = true;
-
-	public void UpdatePassword(string newPasswordHash)
-	{
-		if (string.IsNullOrWhiteSpace(newPasswordHash))
-			throw new ArgumentException("Password hash cannot be empty", nameof(newPasswordHash));
-
-		PasswordHash = newPasswordHash;
-	}
 
 	public void Deactivate() => IsActive = false;
 

@@ -19,7 +19,6 @@ public class IdentityService : IIdentityService
 
 	public async Task<(bool Success, long UserId)> CreateUserAsync(
 		string email,
-		string password,
 		string phoneNumber,
 		string firstName,
 		string lastName)
@@ -48,27 +47,8 @@ public class IdentityService : IIdentityService
 		return (true, user.Id);
 	}
 
-	public async Task<(bool Success, long UserId, string Token)> LoginAsync(string email, string password)
-	{
-		var user = await _context.Users
-			.FirstOrDefaultAsync(u => u.Email == email.ToLower());
-
-		if (user == null)
-			return (false, 0, string.Empty);
-
-		if (!user.IsActive)
-			return (false, 0, string.Empty);
-
-		var result = _passwordHasher.VerifyHashedPassword(null, user.PasswordHash, password);
-
-		if (result == PasswordVerificationResult.Failed)
-			return (false, 0, string.Empty);
-
-		return (true, user.Id, string.Empty);
-	}
-
 	// YANGI - PHONE NUMBER ORQALI LOGIN
-	public async Task<(bool Success, long UserId, string Token)> LoginByPhoneAsync(string phoneNumber, string password)
+	public async Task<(bool Success, long UserId, string Token)> LoginByPhoneAsync(string phoneNumber)
 	{
 		var user = await _context.Users
 			.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
@@ -79,49 +59,6 @@ public class IdentityService : IIdentityService
 		if (!user.IsActive)
 			return (false, 0, string.Empty);
 
-		var result = _passwordHasher.VerifyHashedPassword(null, user.PasswordHash, password);
-
-		if (result == PasswordVerificationResult.Failed)
-			return (false, 0, string.Empty);
-
 		return (true, user.Id, string.Empty);
-	}
-
-	public async Task<bool> VerifyPasswordAsync(long userId, string password)
-	{
-		var user = await _context.Users.FindAsync(userId);
-
-		if (user == null)
-			return false;
-
-		var result = _passwordHasher.VerifyHashedPassword(null, user.PasswordHash, password);
-
-		return result != PasswordVerificationResult.Failed;
-	}
-
-	public async Task<bool> ChangePasswordAsync(long userId, string currentPassword, string newPassword)
-	{
-		var user = await _context.Users.FindAsync(userId);
-
-		if (user == null)
-			return false;
-
-		var verifyResult = _passwordHasher.VerifyHashedPassword(null, user.PasswordHash, currentPassword);
-
-		if (verifyResult == PasswordVerificationResult.Failed)
-			return false;
-
-		var newPasswordHash = _passwordHasher.HashPassword(null, newPassword);
-		user.UpdatePassword(newPasswordHash);
-
-		await _context.SaveChangesAsync();
-
-		return true;
-	}
-
-	public Task<string> HashPasswordAsync(string password)
-	{
-		var hash = _passwordHasher.HashPassword(null, password);
-		return Task.FromResult(hash);
 	}
 }
