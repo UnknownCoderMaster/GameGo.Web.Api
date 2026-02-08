@@ -17,17 +17,20 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
 {
 	private readonly IApplicationDbContext _context;
 	private readonly IIdentityService _identityService;
+	private readonly ITokenService _tokenService;
 	private readonly ISmsService _smsService;
 	private readonly IDateTime _dateTime;
 
 	public LoginCommandHandler(
 		IApplicationDbContext context,
 		IIdentityService identityService,
+		ITokenService tokenService,
 		ISmsService smsService,
 		IDateTime dateTime)
 	{
 		_context = context;
 		_identityService = identityService;
+		_tokenService = tokenService;
 		_smsService = smsService;
 		_dateTime = dateTime;
 	}
@@ -49,7 +52,26 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
 		if (!isValidPassword)
 			return Result<LoginResponse>.Failure("Invalid phone number or password");
 
-		// Invalidate old unused verification codes
+		// Verified user — return tokens directly
+		if (user.IsPhoneVerified)
+		{
+			var accessToken = _tokenService.GenerateAccessToken(user.Id, user.PhoneNumber);
+			var refreshToken = _tokenService.GenerateRefreshToken();
+
+			user.UpdateRefreshToken(refreshToken, _dateTime.UtcNow.AddDays(7));
+			await _context.SaveChangesAsync(cancellationToken);
+
+			return Result<LoginResponse>.Success(new LoginResponse
+			{
+				UserId = user.Id,
+				IsVerified = true,
+				PhoneNumber = user.PhoneNumber,
+				AccessToken = accessToken,
+				RefreshToken = refreshToken
+			});
+		}
+
+		// Not verified — send SMS
 		var oldVerifications = await _context.Verifications
 			.Where(v => v.UserId == user.Id
 				&& v.VerificationType == VerificationType.Phone
@@ -61,9 +83,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
 			old.IsUsed = true;
 		}
 
-		// Generate 4-digit code
-		var verificationCode = "7777";
-		//var verificationCode = new Random().Next(1000, 9999).ToString();
+		var verificationCode = new Random().Next(1000, 9999).ToString();
 
 		var verification = new Verification
 		{
@@ -77,12 +97,12 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
 		_context.Verifications.Add(verification);
 		await _context.SaveChangesAsync(cancellationToken);
 
-		// Send SMS
 		await _smsService.SendVerificationCodeAsync(request.PhoneNumber, verificationCode, cancellationToken);
 
 		return Result<LoginResponse>.Success(new LoginResponse
 		{
 			UserId = user.Id,
+			IsVerified = false,
 			Message = "Verification code sent to your phone number"
 		});
 	}
