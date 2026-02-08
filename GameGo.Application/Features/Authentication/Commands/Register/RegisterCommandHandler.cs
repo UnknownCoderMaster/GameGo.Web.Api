@@ -51,12 +51,9 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Re
 		if (phoneExists)
 			return Result<RegisterResponse>.Failure("Phone number already registered");
 
-		//// Hash password
-		// var passwordHash = await _identityService.HashPasswordAsync(request.Password);
-
-		// Temporary static password hash until password reset is implemented
-		var staticPassword = "7777";
-		var passwordHash = await _identityService.HashPasswordAsync(staticPassword);
+		// Default password for all users
+		var defaultPassword = "7777";
+		var passwordHash = await _identityService.HashPasswordAsync(defaultPassword);
 
 		// Create user
 		var user = User.Create(
@@ -69,10 +66,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Re
 		_context.Users.Add(user);
 		await _context.SaveChangesAsync(cancellationToken);
 
-		// // Generate verification code
-		// var verificationCode = new Random().Next(1000, 9999).ToString();
-
-		var verificationCode = "7777"; // Static code for testing purposes
+		var verificationCode = new Random().Next(1000, 9999).ToString();
 
 		var verification = new Verification
 		{
@@ -86,8 +80,8 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Re
 		_context.Verifications.Add(verification);
 		await _context.SaveChangesAsync(cancellationToken);
 
-		// // Send SMS
-		// await _smsService.SendVerificationCodeAsync(request.PhoneNumber, verificationCode);
+		// Send SMS
+		await _smsService.SendVerificationCodeAsync(request.PhoneNumber, verificationCode, cancellationToken);
 
 		return Result<RegisterResponse>.Success(new RegisterResponse
 		{

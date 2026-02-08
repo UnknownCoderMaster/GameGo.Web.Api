@@ -15,6 +15,7 @@ public class PlaceTypeConfiguration : IEntityTypeConfiguration<PlaceType>
 		builder.Property(pt => pt.Slug).IsRequired().HasMaxLength(50);
 		builder.Property(pt => pt.Icon).HasMaxLength(100);
 		builder.Property(pt => pt.Description).HasMaxLength(300);
+		builder.Property(pt => pt.ImageUrl).HasMaxLength(500);
 		builder.Property(pt => pt.IsActive).HasDefaultValue(true);
 
 		builder.HasIndex(pt => pt.Slug).IsUnique();

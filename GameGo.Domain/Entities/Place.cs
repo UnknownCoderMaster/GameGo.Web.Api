@@ -47,7 +47,11 @@ public class Place : AuditableEntity
 		decimal latitude,
 		decimal longitude,
 		string phoneNumber,
-		string description = null)
+		string description = null,
+		string email = null,
+		string website = null,
+		string instagramUsername = null,
+		string telegramUsername = null)
 	{
 		var coordinate = new Coordinate(latitude, longitude);
 
@@ -62,6 +66,10 @@ public class Place : AuditableEntity
 			Latitude = latitude,
 			Longitude = longitude,
 			PhoneNumber = phoneNumber,
+			Email = email,
+			Website = website,
+			InstagramUsername = instagramUsername,
+			TelegramUsername = telegramUsername,
 			IsActive = true,
 			IsVerified = false,
 			AverageRating = 0,

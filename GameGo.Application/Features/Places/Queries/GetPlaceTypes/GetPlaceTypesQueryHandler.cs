@@ -29,7 +29,8 @@ public class GetPlaceTypesQueryHandler : IRequestHandler<GetPlaceTypesQuery, Res
 				Name = pt.Name,
 				Slug = pt.Slug,
 				Icon = pt.Icon,
-				Description = pt.Description
+				Description = pt.Description,
+				ImageUrl = pt.ImageUrl
 			})
 			.ToListAsync(cancellationToken);
 

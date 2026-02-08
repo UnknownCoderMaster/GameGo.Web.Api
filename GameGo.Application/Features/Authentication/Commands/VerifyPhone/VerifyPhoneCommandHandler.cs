@@ -1,4 +1,4 @@
-﻿using GameGo.Application.Common.Models;
+using GameGo.Application.Common.Models;
 using GameGo.Application.Contracts.Persistence;
 using GameGo.Domain.Enums;
 using MediatR;
@@ -20,9 +20,15 @@ public class VerifyPhoneCommandHandler : IRequestHandler<VerifyPhoneCommand, Res
 
 	public async Task<Result<string>> Handle(VerifyPhoneCommand request, CancellationToken cancellationToken)
 	{
+		var user = await _context.Users
+			.FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber, cancellationToken);
+
+		if (user == null)
+			return Result<string>.Failure("User not found");
+
 		var verification = await _context.Verifications
 			.FirstOrDefaultAsync(v =>
-				v.UserId == request.UserId &&
+				v.UserId == user.Id &&
 				v.Code == request.Code &&
 				v.VerificationType == VerificationType.Phone &&
 				!v.IsUsed,
@@ -33,11 +39,6 @@ public class VerifyPhoneCommandHandler : IRequestHandler<VerifyPhoneCommand, Res
 
 		if (verification.ExpiresAt < DateTime.UtcNow)
 			return Result<string>.Failure("Verification code has expired");
-
-		var user = await _context.Users.FindAsync(new object[] { request.UserId }, cancellationToken);
-
-		if (user == null)
-			return Result<string>.Failure("User not found");
 
 		user.VerifyPhone();
 		verification.IsUsed = true;

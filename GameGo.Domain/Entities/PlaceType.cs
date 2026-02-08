@@ -9,6 +9,7 @@ public class PlaceType : AuditableEntity
 	public string Slug { get; private set; } = null!;
 	public string Icon { get; private set; }
 	public string Description { get; private set; }
+	public string ImageUrl { get; private set; }
 	public bool IsActive { get; private set; }
 
 	// Navigation Properties
@@ -26,5 +27,18 @@ public class PlaceType : AuditableEntity
 			Description = description,
 			IsActive = true
 		};
+	}
+
+	public void Update(string name, string slug, string icon, string description)
+	{
+		Name = name;
+		Slug = slug.ToLower();
+		Icon = icon;
+		Description = description;
+	}
+
+	public void UpdateImage(string imageUrl)
+	{
+		ImageUrl = imageUrl;
 	}
 }

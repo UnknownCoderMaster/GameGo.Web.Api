@@ -1,7 +1,10 @@
 ﻿using GameGo.Application.Features.Places.Commands.CreatePlace;
+using GameGo.Application.Features.Places.Commands.CreatePlaceType;
 using GameGo.Application.Features.Places.Commands.DeletePlaceImage;
 using GameGo.Application.Features.Places.Commands.SetPrimaryImage;
+using GameGo.Application.Features.Places.Commands.UpdatePlaceType;
 using GameGo.Application.Features.Places.Commands.UploadPlaceImage;
+using GameGo.Application.Features.Places.Commands.UploadPlaceTypeImage;
 using GameGo.Application.Features.Places.Queries.GetPlaceById;
 using GameGo.Application.Features.Places.Queries.GetPlaceTypes;
 using GameGo.Application.Features.Places.Queries.SearchPlaces;
@@ -55,6 +58,59 @@ public class PlacesController : ControllerBase
 			return BadRequest(new { error = result.Error });
 
 		return Ok(result.Data);
+	}
+
+	[HttpPost("types")]
+	[Authorize]
+	public async Task<IActionResult> CreateType([FromBody] CreatePlaceTypeCommand command)
+	{
+		var result = await _mediator.Send(command);
+
+		if (!result.IsSuccess)
+			return BadRequest(new { error = result.Error });
+
+		return Ok(new { id = result.Data, message = "PlaceType yaratildi" });
+	}
+
+	[HttpPut("types/{id}")]
+	[Authorize]
+	public async Task<IActionResult> UpdateType(long id, [FromBody] UpdatePlaceTypeCommand command)
+	{
+		command.Id = id;
+		var result = await _mediator.Send(command);
+
+		if (!result.IsSuccess)
+			return BadRequest(new { error = result.Error });
+
+		return Ok(new { message = "PlaceType yangilandi" });
+	}
+
+	[HttpPost("types/{id}/image")]
+	[Authorize]
+	[RequestSizeLimit(10_485_760)]
+	public async Task<IActionResult> UploadTypeImage(long id, IFormFile file)
+	{
+		if (file == null || file.Length == 0)
+			return BadRequest(new { error = "Fayl tanlanmadi" });
+
+		if (file.Length > 10_485_760)
+			return BadRequest(new { error = "Fayl hajmi 10 MB dan katta bo'lmasligi kerak" });
+
+		using var stream = file.OpenReadStream();
+
+		var command = new UploadPlaceTypeImageCommand
+		{
+			PlaceTypeId = id,
+			ImageStream = stream,
+			FileName = file.FileName
+		};
+
+		var result = await _mediator.Send(command);
+
+		if (!result.IsSuccess)
+			return BadRequest(new { error = result.Error });
+
+		return Ok(new { imageUrl = result.Data, message = "Rasm muvaffaqiyatli yuklandi" });
 	}
 
 	[HttpPost]

@@ -100,7 +100,8 @@ public class SmsService : ISmsService
 	public async Task SendVerificationCodeAsync(string phoneNumber, string code, CancellationToken cancellationToken = default)
 	{
 		//var message = $"GameGo tasdiqlash kodi: {code}. Kod 5 daqiqa amal qiladi.";
-		var message = $"Kod: {code}. Bu Eskiz dan test";
+		var message = $"Bu Eskiz dan test";
+		//var message = $"Kod: {code}. Bu Eskiz dan test";
 		await SendSmsAsync(phoneNumber, message, cancellationToken);
 	}
 

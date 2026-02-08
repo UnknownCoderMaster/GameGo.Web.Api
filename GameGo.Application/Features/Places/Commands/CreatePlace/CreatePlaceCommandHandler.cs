@@ -64,7 +64,11 @@ public class CreatePlaceCommandHandler : IRequestHandler<CreatePlaceCommand, Res
 			request.Latitude,
 			request.Longitude,
 			request.PhoneNumber,
-			request.Description);
+			request.Description,
+			request.Email,
+			request.Website,
+			request.InstagramUsername,
+			request.TelegramUsername);
 
 		_context.Places.Add(place);
 		await _context.SaveChangesAsync(cancellationToken);

@@ -2,8 +2,12 @@ using GameGo.Application.Common.Models;
 using GameGo.Application.Contracts.Identity;
 using GameGo.Application.Contracts.Infrastructure;
 using GameGo.Application.Contracts.Persistence;
+using GameGo.Domain.Entities;
+using GameGo.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,18 +17,18 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
 {
 	private readonly IApplicationDbContext _context;
 	private readonly IIdentityService _identityService;
-	private readonly ITokenService _tokenService;
+	private readonly ISmsService _smsService;
 	private readonly IDateTime _dateTime;
 
 	public LoginCommandHandler(
 		IApplicationDbContext context,
 		IIdentityService identityService,
-		ITokenService tokenService,
+		ISmsService smsService,
 		IDateTime dateTime)
 	{
 		_context = context;
 		_identityService = identityService;
-		_tokenService = tokenService;
+		_smsService = smsService;
 		_dateTime = dateTime;
 	}
 
@@ -39,24 +43,47 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
 		if (!user.IsActive)
 			return Result<LoginResponse>.Failure("Account is deactivated");
 
+		// Verify password
 		var isValidPassword = await _identityService.VerifyPasswordAsync(user.Id, request.Password);
 
 		if (!isValidPassword)
 			return Result<LoginResponse>.Failure("Invalid phone number or password");
 
-		var accessToken = _tokenService.GenerateAccessToken(user.Id, user.PhoneNumber);
-		var refreshToken = _tokenService.GenerateRefreshToken();
+		// Invalidate old unused verification codes
+		var oldVerifications = await _context.Verifications
+			.Where(v => v.UserId == user.Id
+				&& v.VerificationType == VerificationType.Phone
+				&& !v.IsUsed)
+			.ToListAsync(cancellationToken);
 
-		// Save refresh token to user
-		user.UpdateRefreshToken(refreshToken, _dateTime.UtcNow.AddDays(7));
+		foreach (var old in oldVerifications)
+		{
+			old.IsUsed = true;
+		}
+
+		// Generate 4-digit code
+		var verificationCode = "7777";
+		//var verificationCode = new Random().Next(1000, 9999).ToString();
+
+		var verification = new Verification
+		{
+			UserId = user.Id,
+			VerificationType = VerificationType.Phone,
+			Code = verificationCode,
+			ExpiresAt = _dateTime.UtcNow.AddMinutes(5),
+			IsUsed = false
+		};
+
+		_context.Verifications.Add(verification);
 		await _context.SaveChangesAsync(cancellationToken);
+
+		// Send SMS
+		await _smsService.SendVerificationCodeAsync(request.PhoneNumber, verificationCode, cancellationToken);
 
 		return Result<LoginResponse>.Success(new LoginResponse
 		{
 			UserId = user.Id,
-			PhoneNumber = user.PhoneNumber,
-			AccessToken = accessToken,
-			RefreshToken = refreshToken
+			Message = "Verification code sent to your phone number"
 		});
 	}
 }
