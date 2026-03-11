@@ -1,7 +1,9 @@
 ﻿using GameGo.Application.Features.Places.Commands.CreatePlace;
 using GameGo.Application.Features.Places.Commands.CreatePlaceType;
+using GameGo.Application.Features.Places.Commands.DeletePlace;
 using GameGo.Application.Features.Places.Commands.DeletePlaceImage;
 using GameGo.Application.Features.Places.Commands.SetPrimaryImage;
+using GameGo.Application.Features.Places.Commands.UpdatePlace;
 using GameGo.Application.Features.Places.Commands.UpdatePlaceType;
 using GameGo.Application.Features.Places.Commands.UploadPlaceImage;
 using GameGo.Application.Features.Places.Commands.UploadPlaceTypeImage;
@@ -123,6 +125,31 @@ public class PlacesController : ControllerBase
 			return BadRequest(new { error = result.Error });
 
 		return CreatedAtAction(nameof(GetById), new { id = result.Data }, new { id = result.Data });
+	}
+
+	[HttpPut("{id}")]
+	[Authorize]
+	public async Task<IActionResult> Update(long id, [FromBody] UpdatePlaceCommand command)
+	{
+		command.Id = id;
+		var result = await _mediator.Send(command);
+
+		if (!result.IsSuccess)
+			return BadRequest(new { error = result.Error });
+
+		return Ok(new { message = "Joy muvaffaqiyatli yangilandi" });
+	}
+
+	[HttpDelete("{id}")]
+	[Authorize]
+	public async Task<IActionResult> Delete(long id)
+	{
+		var result = await _mediator.Send(new DeletePlaceCommand { Id = id });
+
+		if (!result.IsSuccess)
+			return BadRequest(new { error = result.Error });
+
+		return Ok(new { message = "Joy muvaffaqiyatli o'chirildi" });
 	}
 
 

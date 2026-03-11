@@ -1,33 +1,37 @@
-﻿using FluentValidation;
-using GameGo.Application.Features.Places.Commands.UploadPlaceImage;
-using System.IO;
-using System.Linq;
+using FluentValidation;
 
 namespace GameGo.Application.Features.Places.Commands.UpdatePlace;
 
-public class UploadPlaceImageCommandValidator : AbstractValidator<UploadPlaceImageCommand>
+public class UpdatePlaceCommandValidator : AbstractValidator<UpdatePlaceCommand>
 {
-	private static readonly string[] AllowedExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
-
-	public UploadPlaceImageCommandValidator()
+	public UpdatePlaceCommandValidator()
 	{
-		RuleFor(x => x.PlaceId)
-			.GreaterThan(0).WithMessage("Place ID noto'g'ri");
+		RuleFor(x => x.Id)
+			.GreaterThan(0).WithMessage("Place ID is required");
 
-		RuleFor(x => x.ImageStream)
-			.NotNull().WithMessage("Rasm kiritilishi shart");
+		RuleFor(x => x.PlaceTypeId)
+			.GreaterThan(0).WithMessage("Place type is required");
 
-		RuleFor(x => x.FileName)
-			.NotEmpty().WithMessage("Fayl nomi kiritilishi shart")
-			.Must(BeValidExtension).WithMessage("Faqat jpg, jpeg, png, webp formatdagi rasmlar qabul qilinadi");
+		RuleFor(x => x.Name)
+			.NotEmpty().WithMessage("Name is required")
+			.MaximumLength(150).WithMessage("Name must not exceed 150 characters");
 
-		RuleFor(x => x.DisplayOrder)
-			.GreaterThanOrEqualTo(0).WithMessage("Display order 0 yoki katta bo'lishi kerak");
-	}
+		RuleFor(x => x.Address)
+			.NotEmpty().WithMessage("Address is required")
+			.MaximumLength(400).WithMessage("Address must not exceed 400 characters");
 
-	private bool BeValidExtension(string fileName)
-	{
-		var extension = Path.GetExtension(fileName).ToLower();
-		return AllowedExtensions.Contains(extension);
+		RuleFor(x => x.Latitude)
+			.InclusiveBetween(-90, 90).WithMessage("Latitude must be between -90 and 90");
+
+		RuleFor(x => x.Longitude)
+			.InclusiveBetween(-180, 180).WithMessage("Longitude must be between -180 and 180");
+
+		RuleFor(x => x.PhoneNumber)
+			.NotEmpty().WithMessage("Phone number is required")
+			.Matches(@"^\+998[0-9]{9}$").WithMessage("Phone number must be in format +998XXXXXXXXX");
+
+		RuleFor(x => x.Email)
+			.EmailAddress().When(x => !string.IsNullOrEmpty(x.Email))
+			.WithMessage("Invalid email format");
 	}
 }

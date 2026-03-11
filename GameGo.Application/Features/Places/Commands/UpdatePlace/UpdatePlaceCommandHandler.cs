@@ -1,78 +1,61 @@
-﻿using GameGo.Application.Common.Models;
+using GameGo.Application.Common.Models;
 using GameGo.Application.Contracts.Identity;
-using GameGo.Application.Contracts.Infrastructure;
 using GameGo.Application.Contracts.Persistence;
-using GameGo.Application.Features.Places.Commands.UploadPlaceImage;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace GameGo.Application.Features.Places.Commands.UpdatePlace;
 
-public class UploadPlaceImageCommandHandler : IRequestHandler<UploadPlaceImageCommand, Result<long>>
+public class UpdatePlaceCommandHandler : IRequestHandler<UpdatePlaceCommand, Result>
 {
 	private readonly IApplicationDbContext _context;
-	private readonly IFileService _fileService;
 	private readonly ICurrentUserService _currentUser;
 
-	public UploadPlaceImageCommandHandler(
+	public UpdatePlaceCommandHandler(
 		IApplicationDbContext context,
-		IFileService fileService,
 		ICurrentUserService currentUser)
 	{
 		_context = context;
-		_fileService = fileService;
 		_currentUser = currentUser;
 	}
 
-	public async Task<Result<long>> Handle(UploadPlaceImageCommand request, CancellationToken cancellationToken)
+	public async Task<Result> Handle(UpdatePlaceCommand request, CancellationToken cancellationToken)
 	{
-		// 1. Place mavjudligini tekshirish
+		if (!_currentUser.IsAuthenticated || !_currentUser.UserId.HasValue)
+			return Result.Failure("User must be authenticated");
+
 		var place = await _context.Places
-			.Include(p => p.PlaceImages)
-			.FirstOrDefaultAsync(p => p.Id == request.PlaceId, cancellationToken);
+			.FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
 		if (place == null)
-			return Result<long>.Failure("Joy topilmadi");
+			return Result.Failure("Place not found");
 
-		// 2. Faqat joy egasi rasm qo'sha oladi
-		if (place.OwnerId != _currentUser.UserId)
-			return Result<long>.Failure("Siz bu joyga rasm qo'sha olmaysiz");
+		if (place.OwnerId != _currentUser.UserId.Value)
+			return Result.Failure("Only place owner can update this place");
 
-		// 3. Rasmni upload qilish
-		var imageUrl = await _fileService.UploadFileAsync(
-			request.ImageStream,
-			request.FileName,
-			"places",
-			cancellationToken);
+		var placeTypeExists = await _context.PlaceTypes
+			.AnyAsync(pt => pt.Id == request.PlaceTypeId && pt.IsActive, cancellationToken);
 
-		// 4. Agar bu primary rasm bo'lsa, boshqa primary rasmlarni o'chirish
-		if (request.IsPrimary)
-		{
-			foreach (var image in place.PlaceImages.Where(i => i.IsPrimary))
-			{
-				image.IsPrimary = false;
-				image.UpdatedAt = DateTime.UtcNow;
-			}
-		}
+		if (!placeTypeExists)
+			return Result.Failure("Place type not found or inactive");
 
-		// 5. Database'ga qo'shish
-		var placeImage = new PlaceImage
-		{
-			PlaceId = request.PlaceId,
-			ImageUrl = imageUrl,
-			IsPrimary = request.IsPrimary,
-			DisplayOrder = request.DisplayOrder,
-			CreatedAt = DateTime.UtcNow,
-			UpdatedAt = DateTime.UtcNow
-		};
+		place.Update(
+			request.PlaceTypeId,
+			request.Name,
+			request.Address,
+			request.Latitude,
+			request.Longitude,
+			request.PhoneNumber,
+			request.Description,
+			request.Email,
+			request.Website,
+			request.InstagramUsername,
+			request.TelegramUsername);
 
-		_context.PlaceImages.Add(placeImage);
 		await _context.SaveChangesAsync(cancellationToken);
 
-		return Result<long>.Success(placeImage.Id);
+		return Result.Success();
 	}
 }

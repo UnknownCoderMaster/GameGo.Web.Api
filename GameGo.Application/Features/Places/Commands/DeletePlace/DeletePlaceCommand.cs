@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GameGo.Application.Common.Models;
+using MediatR;
 
-namespace GameGo.Application.Features.Places.Commands.DeletePlace
+namespace GameGo.Application.Features.Places.Commands.DeletePlace;
+
+public class DeletePlaceCommand : IRequest<Result>
 {
-	internal class DeletePlaceCommand
-	{
-	}
+	public long Id { get; set; }
 }

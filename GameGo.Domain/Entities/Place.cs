@@ -78,6 +78,34 @@ public class Place : AuditableEntity
 		};
 	}
 
+	public void Update(
+		long placeTypeId,
+		string name,
+		string address,
+		decimal latitude,
+		decimal longitude,
+		string phoneNumber,
+		string description = null,
+		string email = null,
+		string website = null,
+		string instagramUsername = null,
+		string telegramUsername = null)
+	{
+		var coordinate = new Coordinate(latitude, longitude);
+
+		PlaceTypeId = placeTypeId;
+		Name = name;
+		Description = description;
+		Address = address;
+		Latitude = latitude;
+		Longitude = longitude;
+		PhoneNumber = phoneNumber;
+		Email = email;
+		Website = website;
+		InstagramUsername = instagramUsername;
+		TelegramUsername = telegramUsername;
+	}
+
 	public void UpdateRating(decimal newAverageRating, int totalRatings)
 	{
 		AverageRating = newAverageRating;
